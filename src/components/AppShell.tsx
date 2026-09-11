@@ -42,9 +42,9 @@ function ThemeToggle() {
 }
 
 const NAV_ITEMS = [
-  { to: "/", label: "Home", icon: Home },
   { to: "/explore", label: "Explore", icon: Compass },
   { to: "/collection", label: "Loot", icon: Backpack },
+  { to: "/", label: "Home", icon: Home },
   { to: "/map", label: "Map", icon: MapIcon },
   { to: "/profile", label: "Profile", icon: User },
 ] as const;

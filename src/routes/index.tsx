@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Star,
   Camera,
-  Compass,
   Zap,
   Target,
   Flame,
@@ -196,19 +195,10 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Explore CTA */}
-      <Link
-        to="/explore"
-        className="flex items-center justify-center gap-2 border-2 border-outline bg-primary px-4 py-4 font-pixel text-xs text-primary-foreground pixel-shadow pixel-press"
-      >
-        <Compass className="h-5 w-5" />
-        START EXPLORING
-      </Link>
-
-      {/* Today's loot */}
+      {/* Today's Quest */}
       <section>
         <div className="flex items-baseline justify-between">
-          <h2 className="font-pixel text-xs text-foreground">TODAY'S LOOT</h2>
+          <h2 className="font-pixel text-xs text-foreground">TODAY'S QUEST</h2>
           <span className="font-pixel text-[7px] text-muted-foreground">RESETS IN 09:41</span>
         </div>
         <div className="mt-3 space-y-3">
@@ -291,13 +281,16 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Proof hint */}
-      <section className="flex items-center gap-3 border-2 border-dashed border-outline bg-secondary p-3">
-        <Camera className="h-5 w-5 shrink-0 text-secondary-foreground" />
-        <p className="text-xs text-secondary-foreground">
-          Found one? Snap a photo as proof to claim the XP.
-        </p>
-      </section>
+      {/* Proof hint footer */}
+      <div className="mt-6 space-y-3">
+        <div className="h-px w-full bg-outline" />
+        <section className="flex items-center gap-3 border-2 border-dashed border-outline bg-secondary p-3">
+          <Camera className="h-5 w-5 shrink-0 text-secondary-foreground" />
+          <p className="text-xs text-secondary-foreground">
+            Found one? Snap a photo as proof to claim the XP.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }
