@@ -81,53 +81,18 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Today's Quest */}
+      {/* Today's Quest CTA */}
       <section>
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-pixel text-xs text-foreground">TODAY'S QUEST</h2>
-          <span className="font-pixel text-[7px] text-muted-foreground">RESETS IN 09:41</span>
-        </div>
-        <div className="mt-3 space-y-3">
-          {TODAYS_LOOT.map((loot) => {
-            const rarity = RARITY_STYLES[loot.rarity];
-            const Icon = loot.icon;
-            return (
-              <article
-                key={loot.title}
-                className={`border-2 border-l-8 border-outline bg-card p-3 pixel-shadow ${rarity.border}`}
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    className={`grid h-11 w-11 shrink-0 place-items-center border-2 border-outline ${rarity.badge}`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="truncate text-sm font-bold text-card-foreground">
-                        {loot.title}
-                      </h3>
-                      <span className="shrink-0 font-pixel text-[9px] text-primary">
-                        +{loot.xp}XP
-                      </span>
-                    </div>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                      {loot.description}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <Stars count={loot.difficulty} />
-                      <span
-                        className={`border-2 border-outline px-1.5 py-0.5 font-pixel text-[7px] ${rarity.badge}`}
-                      >
-                        {rarity.label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+        <Link
+          to="/quest"
+          className="group flex flex-col items-center justify-center gap-2 border-2 border-outline bg-primary p-5 text-center pixel-shadow pixel-press"
+        >
+          <span className="font-pixel text-sm text-primary-foreground">TODAY'S QUEST</span>
+          <QuestCountdown className="font-pixel text-[10px] text-primary-foreground/80" />
+          <span className="mt-1 font-pixel text-[7px] text-primary-foreground/70">
+            TAP TO VIEW LOOT
+          </span>
+        </Link>
       </section>
 
       {/* Collection preview */}
