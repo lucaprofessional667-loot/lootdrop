@@ -1,17 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Star,
-  Camera,
-  Zap,
-  Target,
-  Flame,
-  Coins,
-  Palette,
-  Building2,
-  Droplet,
-  Crown,
-  TreePine,
-} from "lucide-react";
+import { Camera, Zap, Target, Flame } from "lucide-react";
+import { QuestCountdown } from "@/components/QuestCountdown";
+import { RECENT_FINDS, RARITY_STYLES } from "@/lib/loot-data";
 import avatarImg from "../assets/avatar.png";
 
 export const Route = createFileRoute("/")({

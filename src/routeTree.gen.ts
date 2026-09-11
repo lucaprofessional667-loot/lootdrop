@@ -14,6 +14,7 @@ import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as QuestRouteImport } from './routes/quest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestRoute = QuestRouteImport.update({
+  id: '/quest',
+  path: '/quest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
   '/profile': typeof ProfileRoute
+  '/quest': typeof QuestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
   '/profile': typeof ProfileRoute
+  '/quest': typeof QuestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,21 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
   '/profile': typeof ProfileRoute
+  '/quest': typeof QuestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/collection' | '/explore' | '/map' | '/profile'
+  fullPaths: '/' | '/collection' | '/explore' | '/map' | '/profile' | '/quest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/collection' | '/explore' | '/map' | '/profile'
-  id: '__root__' | '/' | '/collection' | '/explore' | '/map' | '/profile'
+  to: '/' | '/collection' | '/explore' | '/map' | '/profile' | '/quest'
+  id:
+    | '__root__'
+    | '/'
+    | '/collection'
+    | '/explore'
+    | '/map'
+    | '/profile'
+    | '/quest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +93,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   MapRoute: typeof MapRoute
   ProfileRoute: typeof ProfileRoute
+  QuestRoute: typeof QuestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quest': {
+      id: '/quest'
+      path: '/quest'
+      fullPath: '/quest'
+      preLoaderRoute: typeof QuestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   MapRoute: MapRoute,
   ProfileRoute: ProfileRoute,
+  QuestRoute: QuestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
