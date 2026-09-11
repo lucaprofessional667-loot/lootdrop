@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Star,
   Camera,
-  Compass,
   Zap,
   Target,
   Flame,
