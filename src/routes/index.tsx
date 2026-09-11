@@ -282,13 +282,16 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Proof hint */}
-      <section className="flex items-center gap-3 border-2 border-dashed border-outline bg-secondary p-3">
-        <Camera className="h-5 w-5 shrink-0 text-secondary-foreground" />
-        <p className="text-xs text-secondary-foreground">
-          Found one? Snap a photo as proof to claim the XP.
-        </p>
-      </section>
+      {/* Proof hint footer */}
+      <div className="mt-6 space-y-3">
+        <div className="h-px w-full bg-outline" />
+        <section className="flex items-center gap-3 border-2 border-dashed border-outline bg-secondary p-3">
+          <Camera className="h-5 w-5 shrink-0 text-secondary-foreground" />
+          <p className="text-xs text-secondary-foreground">
+            Found one? Snap a photo as proof to claim the XP.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }
