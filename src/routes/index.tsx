@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera } from "lucide-react";
+import { Camera, Target, Zap } from "lucide-react";
 import { QuestCountdown } from "@/components/QuestCountdown";
 import { RECENT_FINDS, RARITY_STYLES } from "@/lib/loot-data";
 import avatarImg from "../assets/avatar.png";
