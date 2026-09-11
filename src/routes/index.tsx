@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Camera, Target, Zap } from "lucide-react";
 import { QuestCountdown } from "@/components/QuestCountdown";
 import { RECENT_FINDS, RARITY_STYLES } from "@/lib/loot-data";
+import { useLootDrop } from "@/hooks/use-loot-drop";
 import avatarImg from "../assets/avatar.png";
 
 export const Route = createFileRoute("/")({
@@ -24,6 +25,10 @@ export const Route = createFileRoute("/")({
 
 
 function HomePage() {
+  const { configured, profile, loot, foundToday, xpToday, loading } = useLootDrop();
+  const xp = profile?.total_xp ?? 0;
+  const levelFloor = Math.max(0, (profile?.level ?? 1) - 1) * 500;
+  const xpInLevel = xp - levelFloor;
   return (
     <div className="space-y-5">
       {/* Profile card */}
@@ -38,22 +43,22 @@ function HomePage() {
           />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold text-card-foreground">
-              xX_LootHunter_Xx
+              {profile?.username ?? (configured ? "CHOOSE USERNAME" : "CONNECT SUPABASE")}
             </h1>
             <div className="mt-0.5 inline-block border-2 border-outline bg-accent px-1.5 py-0.5 font-pixel text-[8px] text-accent-foreground">
-              LEVEL 12
+              LEVEL {profile?.level ?? 1}
             </div>
           </div>
         </div>
         <div className="mt-3">
           <div className="flex items-center justify-between font-pixel text-[8px] text-muted-foreground">
             <span>XP</span>
-            <span className="text-foreground">1,240 / 1,500</span>
+            <span className="text-foreground">{loading ? "…" : `${xpInLevel} / 500`}</span>
           </div>
           <div className="mt-1 h-4 border-2 border-outline bg-muted">
             <div
               className="h-full bg-primary"
-              style={{ width: `${(1240 / 1500) * 100}%` }}
+              style={{ width: `${Math.min(100, (xpInLevel / 500) * 100)}%` }}
             />
           </div>
         </div>
@@ -67,7 +72,7 @@ function HomePage() {
             <span className="font-pixel text-[7px]">FOUND TODAY</span>
           </div>
           <p className="mt-2 font-pixel text-xl text-card-foreground">
-            3<span className="text-muted-foreground">/5</span>
+            {foundToday}<span className="text-muted-foreground">/{loot.length || 0}</span>
           </p>
         </div>
         <div className="border-2 border-outline bg-card p-3 pixel-shadow">
@@ -76,7 +81,7 @@ function HomePage() {
             <span className="font-pixel text-[7px]">XP TODAY</span>
           </div>
           <p className="mt-2 font-pixel text-xl text-card-foreground">
-            +430<span className="text-[10px] text-muted-foreground"> XP</span>
+            +{xpToday}<span className="text-[10px] text-muted-foreground"> XP</span>
           </p>
         </div>
       </section>
