@@ -23,7 +23,7 @@ interface QuestCountdownProps {
 }
 
 export function QuestCountdown({ className = "", prefix = "RESETS IN" }: QuestCountdownProps) {
-  const [ms, setMs] = useState(getTimeUntilReset);
+  const [ms, setMs] = useState<number | null>(null);
 
   useEffect(() => {
     setMs(getTimeUntilReset());
@@ -32,8 +32,8 @@ export function QuestCountdown({ className = "", prefix = "RESETS IN" }: QuestCo
   }, []);
 
   return (
-    <span className={className} aria-live="polite">
-      {prefix} {formatCountdown(ms)}
+    <span className={className} aria-live="polite" suppressHydrationWarning>
+      {prefix} {ms === null ? "--:--:--" : formatCountdown(ms)}
     </span>
   );
 }
