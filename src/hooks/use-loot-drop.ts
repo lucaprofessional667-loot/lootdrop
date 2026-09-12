@@ -31,7 +31,8 @@ export function useLootDrop() {
         supabase.from("loot_claims").select("id, loot_id, status, verification_reason, awarded_xp, created_at").eq("user_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (profileResult.error || lootResult.error || claimsResult.error) throw profileResult.error || lootResult.error || claimsResult.error;
-      setProfile(profileResult.data); setLoot(lootResult.data ?? []); setClaims(claimsResult.data ?? []);
+      setProfile(profileResult.data ? { ...profileResult.data, level: profileResult.data.level ?? 1 } : null);
+      setLoot(lootResult.data ?? []); setClaims(claimsResult.data ?? []);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Nu am putut încărca datele de joc."); }
     finally { setLoading(false); }
   }, []);
