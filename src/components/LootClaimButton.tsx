@@ -2,7 +2,7 @@ import { Camera, CheckCircle2, Clock3, XCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import type { Claim, Loot } from "@/hooks/use-loot-drop";
 
-export function LootClaimButton({ loot, claim, onSubmit }: { loot: Loot; claim?: Claim; onSubmit: (loot: Loot, file: File) => Promise<void> }) {
+export function LootClaimButton({ loot, claim, onSubmit }: { loot: Loot; claim: Claim | undefined; onSubmit: (loot: Loot, file: File) => Promise<void> }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
