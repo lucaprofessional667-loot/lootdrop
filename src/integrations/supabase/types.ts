@@ -22,6 +22,8 @@ export type Database = {
           loot_id: string
           photo_path: string
           status: Database["public"]["Enums"]["claim_status"]
+          sticker_path: string | null
+          sticker_status: Database["public"]["Enums"]["sticker_status"]
           user_id: string
           verification_reason: string | null
           verified_at: string | null
@@ -33,6 +35,8 @@ export type Database = {
           loot_id: string
           photo_path: string
           status?: Database["public"]["Enums"]["claim_status"]
+          sticker_path?: string | null
+          sticker_status?: Database["public"]["Enums"]["sticker_status"]
           user_id: string
           verification_reason?: string | null
           verified_at?: string | null
@@ -44,6 +48,8 @@ export type Database = {
           loot_id?: string
           photo_path?: string
           status?: Database["public"]["Enums"]["claim_status"]
+          sticker_path?: string | null
+          sticker_status?: Database["public"]["Enums"]["sticker_status"]
           user_id?: string
           verification_reason?: string | null
           verified_at?: string | null
@@ -139,6 +145,8 @@ export type Database = {
           loot_id: string
           photo_path: string
           status: Database["public"]["Enums"]["claim_status"]
+          sticker_path: string | null
+          sticker_status: Database["public"]["Enums"]["sticker_status"]
           user_id: string
           verification_reason: string | null
           verified_at: string | null
@@ -154,6 +162,7 @@ export type Database = {
     Enums: {
       claim_status: "pending" | "approved" | "rejected"
       loot_rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"
+      sticker_status: "pending" | "ready" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -283,6 +292,7 @@ export const Constants = {
     Enums: {
       claim_status: ["pending", "approved", "rejected"],
       loot_rarity: ["common", "uncommon", "rare", "epic", "legendary"],
+      sticker_status: ["pending", "ready", "failed"],
     },
   },
 } as const
