@@ -245,6 +245,8 @@ export const getCollection = createServerFn({ method: "GET" })
       awarded_xp: number;
       verification_reason: string | null;
       created_at: string;
+      latitude: number | null;
+      longitude: number | null;
       loot_definitions: { title: string; description: string; rarity: CollectionEntry["rarity"] } | null;
     }>;
 
@@ -267,6 +269,8 @@ export const getCollection = createServerFn({ method: "GET" })
           stickerStatus: row.sticker_status,
           stickerUrl: sticker.data?.signedUrl ?? null,
           photoUrl: photo.data?.signedUrl ?? null,
+          latitude: row.latitude,
+          longitude: row.longitude,
         };
       }),
     );
