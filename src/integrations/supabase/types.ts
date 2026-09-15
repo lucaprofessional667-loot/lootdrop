@@ -19,6 +19,8 @@ export type Database = {
           awarded_xp: number
           created_at: string
           id: string
+          latitude: number | null
+          longitude: number | null
           loot_id: string
           photo_path: string
           status: Database["public"]["Enums"]["claim_status"]
@@ -32,6 +34,8 @@ export type Database = {
           awarded_xp?: number
           created_at?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           loot_id: string
           photo_path: string
           status?: Database["public"]["Enums"]["claim_status"]
@@ -45,6 +49,8 @@ export type Database = {
           awarded_xp?: number
           created_at?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           loot_id?: string
           photo_path?: string
           status?: Database["public"]["Enums"]["claim_status"]
@@ -142,6 +148,8 @@ export type Database = {
           awarded_xp: number
           created_at: string
           id: string
+          latitude: number | null
+          longitude: number | null
           loot_id: string
           photo_path: string
           status: Database["public"]["Enums"]["claim_status"]
