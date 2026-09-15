@@ -113,18 +113,27 @@ function HomePage() {
           </Link>
         </div>
         <div className="mt-3 grid grid-cols-4 gap-2">
-          {RECENT_FINDS.map((find) => {
+          {recentFinds.length === 0 && (
+            <p className="col-span-4 border-2 border-dashed border-outline p-3 text-center font-pixel text-[7px] text-muted-foreground">
+              NO LOOT YET
+            </p>
+          )}
+          {recentFinds.map((find) => {
             const rarity = RARITY_STYLES[find.rarity];
-            const Icon = find.icon;
+            const image = find.stickerUrl ?? find.photoUrl;
             return (
               <div
-                key={find.title}
+                key={find.claimId}
                 className={`flex flex-col items-center gap-1.5 border-2 border-b-4 border-outline bg-card p-2 pixel-shadow-sm ${rarity.border.replace("border-l-", "border-b-")}`}
               >
                 <span
-                  className={`grid h-9 w-9 place-items-center border-2 border-outline ${rarity.badge}`}
+                  className={`grid h-9 w-9 place-items-center overflow-hidden border-2 border-outline ${rarity.badge}`}
                 >
-                  <Icon className="h-4 w-4" />
+                  {image ? (
+                    <img src={image} alt={find.title} className="h-full w-full object-contain" />
+                  ) : (
+                    <span className="font-pixel text-[6px]">?</span>
+                  )}
                 </span>
                 <span className="w-full truncate text-center text-[10px] font-semibold text-card-foreground">
                   {find.title}
