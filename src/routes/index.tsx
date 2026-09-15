@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Camera, Target, Zap } from "lucide-react";
 import { QuestCountdown } from "@/components/QuestCountdown";
-import { RECENT_FINDS, RARITY_STYLES } from "@/lib/loot-data";
+import { RARITY_STYLES } from "@/lib/loot-data";
 import { useLootDrop } from "@/hooks/use-loot-drop";
+import { useCollection } from "@/hooks/use-collection";
 import avatarImg from "../assets/avatar.png";
 
 export const Route = createFileRoute("/")({
@@ -26,6 +27,8 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { configured, profile, loot, foundToday, xpToday, loading } = useLootDrop();
+  const { entries } = useCollection();
+  const recentFinds = entries.slice(0, 4);
   const xp = profile?.total_xp ?? 0;
   const levelFloor = Math.max(0, (profile?.level ?? 1) - 1) * 500;
   const xpInLevel = xp - levelFloor;
@@ -112,18 +115,27 @@ function HomePage() {
           </Link>
         </div>
         <div className="mt-3 grid grid-cols-4 gap-2">
-          {RECENT_FINDS.map((find) => {
+          {recentFinds.length === 0 && (
+            <p className="col-span-4 border-2 border-dashed border-outline p-3 text-center font-pixel text-[7px] text-muted-foreground">
+              NO LOOT YET
+            </p>
+          )}
+          {recentFinds.map((find) => {
             const rarity = RARITY_STYLES[find.rarity];
-            const Icon = find.icon;
+            const image = find.stickerUrl ?? find.photoUrl;
             return (
               <div
-                key={find.title}
+                key={find.claimId}
                 className={`flex flex-col items-center gap-1.5 border-2 border-b-4 border-outline bg-card p-2 pixel-shadow-sm ${rarity.border.replace("border-l-", "border-b-")}`}
               >
                 <span
-                  className={`grid h-9 w-9 place-items-center border-2 border-outline ${rarity.badge}`}
+                  className={`grid h-9 w-9 place-items-center overflow-hidden border-2 border-outline ${rarity.badge}`}
                 >
-                  <Icon className="h-4 w-4" />
+                  {image ? (
+                    <img src={image} alt={find.title} className="h-full w-full object-contain" />
+                  ) : (
+                    <span className="font-pixel text-[6px]">?</span>
+                  )}
                 </span>
                 <span className="w-full truncate text-center text-[10px] font-semibold text-card-foreground">
                   {find.title}
