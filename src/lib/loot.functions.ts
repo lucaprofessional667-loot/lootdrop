@@ -219,6 +219,8 @@ export type CollectionEntry = {
   stickerStatus: "pending" | "ready" | "failed";
   stickerUrl: string | null;
   photoUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export const getCollection = createServerFn({ method: "GET" })
@@ -228,7 +230,7 @@ export const getCollection = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("loot_claims")
       .select(
-        "id, photo_path, sticker_path, sticker_status, awarded_xp, verification_reason, created_at, loot_definitions(title, description, rarity)",
+        "id, photo_path, sticker_path, sticker_status, awarded_xp, verification_reason, created_at, latitude, longitude, loot_definitions(title, description, rarity)",
       )
       .eq("user_id", userId)
       .eq("status", "approved")
