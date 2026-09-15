@@ -4,7 +4,6 @@ import { QuestCountdown } from "@/components/QuestCountdown";
 import { RARITY_STYLES, Stars } from "@/lib/loot-data";
 import { LootClaimButton } from "@/components/LootClaimButton";
 import { useLootDrop } from "@/hooks/use-loot-drop";
-import { useState } from "react";
 
 export const Route = createFileRoute("/quest")({
   head: () => ({
@@ -94,6 +93,3 @@ function QuestPage() {
   );
 }
 
-function SetupNotice() {
-  return <div className="border-2 border-outline bg-card p-4 pixel-shadow"><h1 className="font-pixel text-sm">CONNECT SUPABASE</h1><p className="mt-3 text-sm text-muted-foreground">Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to your local environment or connect the project in Lovable Cloud, then reload.</p></div>;
-}
