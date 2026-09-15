@@ -11,6 +11,7 @@ import {
   Package,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
+import { AuthGate } from "@/components/AuthGate";
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -88,7 +89,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       {/* Page content */}
-      <main className="mx-auto w-full max-w-md flex-1 px-4 pt-4 pb-24">{children}</main>
+      <main className="mx-auto w-full max-w-md flex-1 px-4 pt-4 pb-24">
+        <AuthGate>{children}</AuthGate>
+      </main>
 
       {/* Bottom navigation (mobile-first) */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-outline bg-card">

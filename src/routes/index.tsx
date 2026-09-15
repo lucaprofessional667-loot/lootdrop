@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Camera, Target, Zap } from "lucide-react";
 import { QuestCountdown } from "@/components/QuestCountdown";
-import { RECENT_FINDS, RARITY_STYLES } from "@/lib/loot-data";
+import { RARITY_STYLES } from "@/lib/loot-data";
 import { useLootDrop } from "@/hooks/use-loot-drop";
+import { useCollection } from "@/hooks/use-collection";
 import avatarImg from "../assets/avatar.png";
 
 export const Route = createFileRoute("/")({
