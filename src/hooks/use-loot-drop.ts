@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { hasSupabaseConfig } from "@/lib/supabase-config";
 import { verifyClaim } from "@/lib/loot.functions";
+import { compressImage, getCurrentCoords } from "@/lib/image-compress";
 
 export type Loot = { id: string; title: string; description: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary" };
 export type Profile = { id: string; username: string; total_xp: number; level: number };
@@ -62,14 +63,22 @@ export function useLootDrop() {
   const submitProof = async (lootItem: Loot, file: File) => {
     if (!profile) throw new Error("Sign in first.");
     if (!file.type.startsWith("image/")) throw new Error("Choose a photo.");
-    if (file.size > 8 * 1024 * 1024) throw new Error("The photo must be 8 MB or smaller.");
-    const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "") || "jpg";
+    if (file.size > 20 * 1024 * 1024) throw new Error("The photo must be 20 MB or smaller.");
+    const [compressed, coords] = await Promise.all([compressImage(file), getCurrentCoords()]);
+    if (compressed.size > 8 * 1024 * 1024) throw new Error("The photo is too large, try another one.");
+    const extension = compressed.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "") || "jpg";
     const path = `${profile.id}/${crypto.randomUUID()}.${extension}`;
-    const { error: uploadError } = await supabase.storage.from("loot-proofs").upload(path, file, { contentType: file.type, upsert: false });
+    const { error: uploadError } = await supabase.storage.from("loot-proofs").upload(path, compressed, { contentType: compressed.type, upsert: false });
     if (uploadError) throw new Error(uploadError.message);
     const { data: claim, error: claimError } = await supabase
       .from("loot_claims")
-      .insert({ user_id: profile.id, loot_id: lootItem.id, photo_path: path })
+      .insert({
+        user_id: profile.id,
+        loot_id: lootItem.id,
+        photo_path: path,
+        latitude: coords?.latitude ?? null,
+        longitude: coords?.longitude ?? null,
+      })
       .select("id")
       .single();
     if (claimError) throw new Error(claimError.message);
