@@ -27,6 +27,8 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { configured, profile, loot, foundToday, xpToday, loading } = useLootDrop();
+  const { entries } = useCollection();
+  const recentFinds = entries.slice(0, 4);
   const xp = profile?.total_xp ?? 0;
   const levelFloor = Math.max(0, (profile?.level ?? 1) - 1) * 500;
   const xpInLevel = xp - levelFloor;
