@@ -40,7 +40,8 @@ export function useLootDrop() {
       ]);
       if (profileResult.error || lootResult.error || claimsResult.error) throw profileResult.error || lootResult.error || claimsResult.error;
       setProfile(profileResult.data ? { ...profileResult.data, level: profileResult.data.level ?? 1 } : null);
-      setLoot(lootResult.data ?? []); setClaims(claimsResult.data ?? []);
+      setLoot((lootResult.data ?? []).map(({ user_id, ...item }) => ({ ...item, shared: user_id === null })));
+      setClaims(claimsResult.data ?? []);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Nu am putut încărca datele de joc."); }
     finally { setLoading(false); }
   }, []);
