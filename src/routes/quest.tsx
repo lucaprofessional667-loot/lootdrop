@@ -66,6 +66,11 @@ function QuestPage() {
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="truncate text-sm font-bold text-card-foreground">
                       {lootItem.title}
+                      {lootItem.shared ? (
+                        <span className="ml-2 border-2 border-outline bg-secondary px-1 py-0.5 align-middle font-pixel text-[7px] text-secondary-foreground">
+                          EVERYONE
+                        </span>
+                      ) : null}
                     </h3>
                     <span className="shrink-0 font-pixel text-[9px] text-primary">
                       +{lootItem.xp}XP
