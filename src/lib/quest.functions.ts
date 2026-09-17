@@ -137,11 +137,9 @@ export const ensureDailyQuest = createServerFn({ method: "POST" })
       }
     }
 
-    if (rows.length > 0) {
-      // Unique indexes keep concurrent runs from creating duplicates.
-      const { error: insertError } = await supabaseAdmin
-        .from("loot_definitions")
-        .upsert(rows, { ignoreDuplicates: true });
+    // Inserted one by one: the unique indexes reject duplicates from concurrent runs.
+    for (const row of rows) {
+      const { error: insertError } = await supabaseAdmin.from("loot_definitions").insert(row);
       if (insertError && insertError.code !== "23505") throw new Error(insertError.message);
     }
 
