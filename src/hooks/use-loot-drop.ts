@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { hasSupabaseConfig } from "@/lib/supabase-config";
 import { verifyClaim } from "@/lib/loot.functions";
+import { ensureDailyQuest, questDateFor } from "@/lib/quest.functions";
 import { compressImage, getCurrentCoords } from "@/lib/image-compress";
 
 export type Loot = { id: string; title: string; description: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary" };
