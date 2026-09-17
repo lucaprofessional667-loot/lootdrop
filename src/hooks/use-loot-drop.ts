@@ -26,9 +26,15 @@ export function useLootDrop() {
       const { data: { user } } = await supabase.auth.getUser();
       setSignedIn(Boolean(user));
       if (!user) { setProfile(null); setLoot([]); setClaims([]); return; }
+      const questDate = questDateFor();
+      try {
+        await ensureDailyQuest();
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Could not generate today's quest.");
+      }
       const [profileResult, lootResult, claimsResult] = await Promise.all([
         supabase.from("profiles").select("id, username, total_xp, level").eq("id", user.id).maybeSingle(),
-        supabase.from("loot_definitions").select("id, title, description, verification_prompt, xp, difficulty, rarity").eq("active", true).order("xp"),
+        supabase.from("loot_definitions").select("id, title, description, verification_prompt, xp, difficulty, rarity, user_id").eq("active", true).eq("quest_date", questDate).order("xp"),
         supabase.from("loot_claims").select("id, loot_id, status, verification_reason, awarded_xp, created_at").eq("user_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (profileResult.error || lootResult.error || claimsResult.error) throw profileResult.error || lootResult.error || claimsResult.error;
