@@ -5,7 +5,7 @@ import { verifyClaim } from "@/lib/loot.functions";
 import { ensureDailyQuest, questDateFor } from "@/lib/quest.functions";
 import { compressImage, getCurrentCoords } from "@/lib/image-compress";
 
-export type Loot = { id: string; title: string; description: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary" };
+export type Loot = { id: string; title: string; description: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"; shared: boolean };
 export type Profile = { id: string; username: string; total_xp: number; level: number };
 export type Claim = { id: string; loot_id: string; status: "pending" | "approved" | "rejected"; verification_reason: string | null; awarded_xp: number; created_at: string };
 
