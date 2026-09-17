@@ -77,8 +77,10 @@ export type Database = {
           description: string
           difficulty: number
           id: string
+          quest_date: string | null
           rarity: Database["public"]["Enums"]["loot_rarity"]
           title: string
+          user_id: string | null
           verification_prompt: string
           xp: number
         }
@@ -88,8 +90,10 @@ export type Database = {
           description: string
           difficulty: number
           id?: string
+          quest_date?: string | null
           rarity: Database["public"]["Enums"]["loot_rarity"]
           title: string
+          user_id?: string | null
           verification_prompt: string
           xp: number
         }
@@ -99,8 +103,10 @@ export type Database = {
           description?: string
           difficulty?: number
           id?: string
+          quest_date?: string | null
           rarity?: Database["public"]["Enums"]["loot_rarity"]
           title?: string
+          user_id?: string | null
           verification_prompt?: string
           xp?: number
         }
