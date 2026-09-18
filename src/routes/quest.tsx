@@ -4,6 +4,7 @@ import { QuestCountdown } from "@/components/QuestCountdown";
 import { RARITY_STYLES, Stars } from "@/lib/loot-data";
 import { LootClaimButton } from "@/components/LootClaimButton";
 import { useLootDrop } from "@/hooks/use-loot-drop";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/quest")({
   head: () => ({
@@ -98,4 +99,3 @@ function QuestPage() {
     </div>
   );
 }
-
