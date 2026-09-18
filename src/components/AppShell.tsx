@@ -12,8 +12,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { AuthGate } from "@/components/AuthGate";
+import { useLanguage } from "@/lib/i18n";
 
 function ThemeToggle() {
+  const { t } = useLanguage();
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={dark ? t("switchLight") : t("switchDark")}
       className="grid h-9 w-9 place-items-center border-2 border-outline bg-secondary text-secondary-foreground pixel-shadow-sm pixel-press"
     >
       {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -52,6 +54,7 @@ const NAV_ITEMS = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { language, toggleLanguage, t } = useLanguage();
 
   return (
     <div className="flex min-h-screen flex-col bg-background bg-dots">
@@ -67,9 +70,18 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
           </Link>
           <div className="flex items-center gap-2">
+            <button
+              key={language}
+              onClick={toggleLanguage}
+              aria-label={t("switchLanguage")}
+              title={t("switchLanguage")}
+              className="grid h-9 w-9 animate-scale-in place-items-center border-2 border-outline bg-secondary pixel-shadow-sm pixel-press"
+            >
+              <span aria-hidden="true" className={language === "en" ? "flag-us" : "flag-ro"} />
+            </button>
             <ThemeToggle />
             <button
-              aria-label="Notifications"
+              aria-label={t("notifications")}
               className="relative grid h-9 w-9 place-items-center border-2 border-outline bg-secondary text-secondary-foreground pixel-shadow-sm pixel-press"
             >
               <Bell className="h-4 w-4" />
@@ -79,7 +91,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
             <Link
               to="/profile"
-              aria-label="Profile"
+              aria-label={t("profile")}
               className="grid h-9 w-9 place-items-center border-2 border-outline bg-secondary text-secondary-foreground pixel-shadow-sm pixel-press"
             >
               <User className="h-4 w-4" />
@@ -109,7 +121,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 }`}
               >
                 <Icon className="h-5 w-5" />
-                <span className="font-pixel text-[7px]">{label.toUpperCase()}</span>
+                <span className="font-pixel text-[7px]">{t(label.toLowerCase() as "explore" | "loot" | "home" | "map" | "profile").toUpperCase()}</span>
               </Link>
             );
           })}

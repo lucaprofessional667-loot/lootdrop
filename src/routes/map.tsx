@@ -4,6 +4,7 @@ import { Map as MapIcon } from "lucide-react";
 import { useCollection } from "@/hooks/use-collection";
 import { RARITY_STYLES } from "@/lib/loot-data";
 import type { CollectionEntry } from "@/lib/loot.functions";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/map")({
   head: () => ({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/map")({
 
 function MapPage() {
   const { entries, loading, error } = useCollection();
+  const { t, language, locale } = useLanguage();
   const located = entries.filter(
     (entry) => typeof entry.latitude === "number" && typeof entry.longitude === "number",
   );
@@ -75,22 +77,22 @@ function MapPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-pixel text-sm text-foreground">LOOT MAP</h1>
-      {loading && <p className="font-pixel text-[9px] text-muted-foreground">LOADING PINS…</p>}
+      <h1 className="font-pixel text-sm text-foreground">{t("lootMap")}</h1>
+      {loading && <p className="font-pixel text-[9px] text-muted-foreground">{t("loadingPins")}</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {!loading && located.length === 0 ? (
         <div className="flex flex-col items-center gap-4 border-2 border-dashed border-outline bg-card p-10 text-center pixel-shadow">
           <MapIcon className="h-10 w-10 text-muted-foreground" />
-          <p className="font-pixel text-[9px] text-foreground">NO PINS YET</p>
+          <p className="font-pixel text-[9px] text-foreground">{t("noPins")}</p>
           <p className="text-sm text-muted-foreground">
-            Allow location when you snap a proof photo and the spot lands on this map.
+             {t("mapEmpty")}
           </p>
           <Link
             to="/quest"
             className="border-2 border-outline bg-primary px-3 py-2 font-pixel text-[8px] text-primary-foreground pixel-shadow-sm pixel-press"
           >
-            TODAY'S QUEST
+             {t("todaysQuest")}
           </Link>
         </div>
       ) : (
@@ -107,11 +109,11 @@ function MapPage() {
             className="w-full max-w-sm space-y-3 border-2 border-outline bg-card p-4 pixel-shadow"
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 className="font-pixel text-[10px] text-foreground">{selected.title.toUpperCase()}</h2>
+             <h2 className="font-pixel text-[10px] text-foreground">{(language === "ro" ? selected.titleRo ?? selected.title : selected.title).toUpperCase()}</h2>
             {selected.photoUrl && (
               <img
                 src={selected.photoUrl}
-                alt={`Proof photo for ${selected.title}`}
+                 alt={`${t("proofFor")} ${language === "ro" ? selected.titleRo ?? selected.title : selected.title}`}
                 className="w-full border-2 border-outline"
               />
             )}
@@ -119,18 +121,18 @@ function MapPage() {
               <span
                 className={`border-2 border-outline px-1 py-0.5 font-pixel text-[6px] ${RARITY_STYLES[selected.rarity].badge}`}
               >
-                {RARITY_STYLES[selected.rarity].label}
+                 {t(selected.rarity)}
               </span>
               <span className="font-pixel text-[7px] text-primary">+{selected.xp}XP</span>
             </div>
             <p className="font-pixel text-[6px] text-muted-foreground">
-              {new Date(selected.foundAt).toLocaleString()}
+               {new Date(selected.foundAt).toLocaleString(locale)}
             </p>
             <button
               onClick={() => setSelected(null)}
               className="w-full border-2 border-outline bg-secondary py-2 font-pixel text-[8px] text-secondary-foreground pixel-shadow-sm pixel-press"
             >
-              CLOSE
+               {t("close")}
             </button>
           </div>
         </div>

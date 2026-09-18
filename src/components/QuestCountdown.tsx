@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n";
 
 function getTimeUntilReset() {
   const now = new Date();
@@ -22,8 +23,9 @@ interface QuestCountdownProps {
   prefix?: string;
 }
 
-export function QuestCountdown({ className = "", prefix = "RESETS IN" }: QuestCountdownProps) {
+export function QuestCountdown({ className = "", prefix }: QuestCountdownProps) {
   const [ms, setMs] = useState<number | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     setMs(getTimeUntilReset());
@@ -33,7 +35,7 @@ export function QuestCountdown({ className = "", prefix = "RESETS IN" }: QuestCo
 
   return (
     <span className={className} aria-live="polite" suppressHydrationWarning>
-      {prefix} {ms === null ? "--:--:--" : formatCountdown(ms)}
+      {prefix ?? t("resetsIn")} {ms === null ? "--:--:--" : formatCountdown(ms)}
     </span>
   );
 }

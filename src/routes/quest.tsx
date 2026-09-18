@@ -4,6 +4,7 @@ import { QuestCountdown } from "@/components/QuestCountdown";
 import { RARITY_STYLES, Stars } from "@/lib/loot-data";
 import { LootClaimButton } from "@/components/LootClaimButton";
 import { useLootDrop } from "@/hooks/use-loot-drop";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/quest")({
   head: () => ({
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/quest")({
         property: "og:description",
         content: "Check today's loot objectives and hunt them before the reset.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: QuestPage,
@@ -25,8 +28,9 @@ export const Route = createFileRoute("/quest")({
 
 function QuestPage() {
   const { loot, claims, loading, error, submitProof } = useLootDrop();
+  const { t } = useLanguage();
 
-  if (loading) return <p className="font-pixel text-[9px] text-muted-foreground">LOADING QUEST…</p>;
+  if (loading) return <p className="font-pixel text-[9px] text-muted-foreground">{t("loadingQuest")}</p>;
   if (error) return <p className="text-sm text-destructive">{error}</p>;
   return (
     <div className="space-y-5">
@@ -35,16 +39,16 @@ function QuestPage() {
         <Link
           to="/"
           className="grid h-9 w-9 place-items-center border-2 border-outline bg-secondary text-secondary-foreground pixel-shadow-sm pixel-press"
-          aria-label="Back to Home"
+          aria-label={t("backHome")}
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
-        <h1 className="font-pixel text-sm text-foreground">TODAY'S QUEST</h1>
+        <h1 className="font-pixel text-sm text-foreground">{t("todaysQuest")}</h1>
       </div>
 
       {/* Countdown banner */}
       <div className="border-2 border-outline bg-card p-4 text-center pixel-shadow">
-        <p className="font-pixel text-[10px] text-muted-foreground">NEW LOOT IN</p>
+        <p className="font-pixel text-[10px] text-muted-foreground">{t("newLootIn")}</p>
         <QuestCountdown
           className="mt-2 block font-pixel text-2xl text-primary"
           prefix=""
@@ -68,7 +72,7 @@ function QuestPage() {
                       {lootItem.title}
                       {lootItem.shared ? (
                         <span className="ml-2 border-2 border-outline bg-secondary px-1 py-0.5 align-middle font-pixel text-[7px] text-secondary-foreground">
-                          EVERYONE
+                           {t("everyone")}
                         </span>
                       ) : null}
                     </h3>
@@ -84,7 +88,7 @@ function QuestPage() {
                     <span
                       className={`border-2 border-outline px-1.5 py-0.5 font-pixel text-[7px] ${rarity.badge}`}
                     >
-                      {rarity.label}
+                      {t(lootItem.rarity)}
                     </span>
                   </div>
                 </div>
@@ -97,4 +101,3 @@ function QuestPage() {
     </div>
   );
 }
-

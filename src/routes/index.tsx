@@ -5,6 +5,7 @@ import { RARITY_STYLES } from "@/lib/loot-data";
 import { useLootDrop } from "@/hooks/use-loot-drop";
 import { useCollection } from "@/hooks/use-collection";
 import avatarImg from "../assets/avatar.png";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,6 +20,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Your daily loot: objectives, XP progress and your latest finds.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HomePage,
@@ -28,6 +31,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { configured, profile, loot, foundToday, xpToday, loading } = useLootDrop();
   const { entries } = useCollection();
+  const { t, language } = useLanguage();
   const recentFinds = entries.slice(0, 4);
   const xp = profile?.total_xp ?? 0;
   const levelFloor = Math.max(0, (profile?.level ?? 1) - 1) * 500;
@@ -39,17 +43,17 @@ function HomePage() {
         <div className="flex items-center gap-3">
           <img
             src={avatarImg}
-            alt="Pixel avatar of xX_LootHunter_Xx"
+            alt={t("pixelAvatar")}
             width={512}
             height={512}
             className="h-16 w-16 shrink-0 border-2 border-outline bg-secondary pixel-shadow-sm [image-rendering:pixelated]"
           />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-lg font-bold text-card-foreground">
-              {profile?.username ?? (configured ? "CHOOSE USERNAME" : "CONNECT SUPABASE")}
+              {profile?.username ?? (configured ? t("username").toUpperCase() : "LOOT DROP")}
             </h1>
             <div className="mt-0.5 inline-block border-2 border-outline bg-accent px-1.5 py-0.5 font-pixel text-[8px] text-accent-foreground">
-              LEVEL {profile?.level ?? 1}
+              {t("level")} {profile?.level ?? 1}
             </div>
           </div>
         </div>
@@ -72,7 +76,7 @@ function HomePage() {
         <div className="border-2 border-outline bg-card p-3 pixel-shadow">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Target className="h-4 w-4" />
-            <span className="font-pixel text-[7px]">FOUND TODAY</span>
+            <span className="font-pixel text-[7px]">{t("foundToday")}</span>
           </div>
           <p className="mt-2 font-pixel text-xl text-card-foreground">
             {foundToday}<span className="text-muted-foreground">/{loot.length || 0}</span>
@@ -81,7 +85,7 @@ function HomePage() {
         <div className="border-2 border-outline bg-card p-3 pixel-shadow">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Zap className="h-4 w-4" />
-            <span className="font-pixel text-[7px]">XP TODAY</span>
+            <span className="font-pixel text-[7px]">{t("xpToday")}</span>
           </div>
           <p className="mt-2 font-pixel text-xl text-card-foreground">
             +{xpToday}<span className="text-[10px] text-muted-foreground"> XP</span>
@@ -95,10 +99,10 @@ function HomePage() {
           to="/quest"
           className="group flex flex-col items-center justify-center gap-2 border-2 border-outline bg-primary p-5 text-center pixel-shadow pixel-press"
         >
-          <span className="font-pixel text-sm text-primary-foreground">TODAY'S QUEST</span>
+          <span className="font-pixel text-sm text-primary-foreground">{t("todaysQuest")}</span>
           <QuestCountdown className="font-pixel text-[10px] text-primary-foreground/80" />
           <span className="mt-1 font-pixel text-[7px] text-primary-foreground/70">
-            TAP TO VIEW LOOT
+            {t("tapToView")}
           </span>
         </Link>
       </section>
@@ -106,18 +110,18 @@ function HomePage() {
       {/* Collection preview */}
       <section>
         <div className="flex items-baseline justify-between">
-          <h2 className="font-pixel text-xs text-foreground">RECENT FINDS</h2>
+          <h2 className="font-pixel text-xs text-foreground">{t("recentFinds")}</h2>
           <Link
             to="/collection"
             className="font-pixel text-[7px] text-primary hover:underline"
           >
-            VIEW ALL
+            {t("viewAll")}
           </Link>
         </div>
         <div className="mt-3 grid grid-cols-4 gap-2">
           {recentFinds.length === 0 && (
             <p className="col-span-4 border-2 border-dashed border-outline p-3 text-center font-pixel text-[7px] text-muted-foreground">
-              NO LOOT YET
+              {t("noLootYet")}
             </p>
           )}
           {recentFinds.map((find) => {
@@ -132,13 +136,13 @@ function HomePage() {
                   className={`grid h-9 w-9 place-items-center overflow-hidden border-2 border-outline ${rarity.badge}`}
                 >
                   {image ? (
-                    <img src={image} alt={find.title} className="h-full w-full object-contain" />
+                    <img src={image} alt={language === "ro" ? find.titleRo ?? find.title : find.title} className="h-full w-full object-contain" />
                   ) : (
                     <span className="font-pixel text-[6px]">?</span>
                   )}
                 </span>
                 <span className="w-full truncate text-center text-[10px] font-semibold text-card-foreground">
-                  {find.title}
+                  {language === "ro" ? find.titleRo ?? find.title : find.title}
                 </span>
                 <span className="font-pixel text-[6px] text-muted-foreground">
                   +{find.xp}XP
@@ -155,7 +159,7 @@ function HomePage() {
         <section className="flex items-center gap-3 border-2 border-dashed border-outline bg-secondary p-3">
           <Camera className="h-5 w-5 shrink-0 text-secondary-foreground" />
           <p className="text-xs text-secondary-foreground">
-            Found one? Snap a photo as proof to claim the XP.
+             {t("proofHint")}
           </p>
         </section>
       </div>

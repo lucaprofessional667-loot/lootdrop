@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type Verdict = { approved: boolean; reason: string };
+type Verdict = { approved: boolean; reason: string; reason_ro: string };
 
 function toDataUrl(bytes: Uint8Array, type: string) {
   let binary = "";
@@ -29,7 +29,7 @@ async function verifyPhotoWithAI(prompt: string, dataUrl: string): Promise<Verdi
         {
           role: "system",
           content:
-            "You verify real-world scavenger-hunt photos. Be fair but strict: approve only if the photo plausibly satisfies the requirement. Reject screenshots, drawings of the subject, or clearly unrelated photos. Reply with JSON only.",
+            "You verify real-world scavenger-hunt photos. Be fair but strict: approve only if the photo plausibly satisfies the requirement. Reject screenshots, drawings of the subject, or clearly unrelated photos. Give the same short reason in English and natural Romanian. Reply with JSON only.",
         },
         {
           role: "user",
@@ -50,8 +50,9 @@ async function verifyPhotoWithAI(prompt: string, dataUrl: string): Promise<Verdi
             properties: {
               approved: { type: "boolean" },
               reason: { type: "string", description: "One short sentence explaining the decision." },
+              reason_ro: { type: "string", description: "The same decision reason in Romanian." },
             },
-            required: ["approved", "reason"],
+            required: ["approved", "reason", "reason_ro"],
           },
         },
       },
@@ -66,7 +67,7 @@ async function verifyPhotoWithAI(prompt: string, dataUrl: string): Promise<Verdi
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("Photo verification returned no answer.");
   const parsed = JSON.parse(content) as Verdict;
-  return { approved: Boolean(parsed.approved), reason: String(parsed.reason || "") };
+  return { approved: Boolean(parsed.approved), reason: String(parsed.reason || ""), reason_ro: String(parsed.reason_ro || parsed.reason || "") };
 }
 
 /** Cuts the requested object out of the proof photo and returns a paper-sticker PNG. */
@@ -168,6 +169,7 @@ export const verifyClaim = createServerFn({ method: "POST" })
       reason: verdict.reason,
     });
     if (finalizeError) throw new Error(finalizeError.message);
+    await supabaseAdmin.from("loot_claims").update({ verification_reason_ro: verdict.reason_ro }).eq("id", claim.id);
 
     if (verdict.approved) {
       await buildSticker(claim.id, userId, loot.title, dataUrl);
@@ -176,7 +178,7 @@ export const verifyClaim = createServerFn({ method: "POST" })
       await supabaseAdmin.storage.from("loot-proofs").remove([claim.photo_path]);
     }
 
-    return { status: verdict.approved ? "approved" : "rejected", reason: verdict.reason };
+    return { status: verdict.approved ? "approved" : "rejected", reason: verdict.reason, reason_ro: verdict.reason_ro };
   });
 
 export const retrySticker = createServerFn({ method: "POST" })
@@ -210,12 +212,15 @@ export const retrySticker = createServerFn({ method: "POST" })
 
 export type CollectionEntry = {
   claimId: string;
-  title: string;
-  description: string;
+  title: string; title_ro?: string | null;
+  titleRo: string | null;
+  description: string; description_ro?: string | null;
+  descriptionRo: string | null;
   rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
   xp: number;
   foundAt: string;
   reason: string | null;
+  reasonRo: string | null;
   stickerStatus: "pending" | "ready" | "failed";
   stickerUrl: string | null;
   photoUrl: string | null;
@@ -230,7 +235,7 @@ export const getCollection = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("loot_claims")
       .select(
-        "id, photo_path, sticker_path, sticker_status, awarded_xp, verification_reason, created_at, latitude, longitude, loot_definitions(title, description, rarity)",
+        "id, photo_path, sticker_path, sticker_status, awarded_xp, verification_reason, verification_reason_ro, created_at, latitude, longitude, loot_definitions(title, title_ro, description, description_ro, rarity)",
       )
       .eq("user_id", userId)
       .eq("status", "approved")
@@ -244,10 +249,11 @@ export const getCollection = createServerFn({ method: "GET" })
       sticker_status: CollectionEntry["stickerStatus"];
       awarded_xp: number;
       verification_reason: string | null;
+      verification_reason_ro: string | null;
       created_at: string;
       latitude: number | null;
       longitude: number | null;
-      loot_definitions: { title: string; description: string; rarity: CollectionEntry["rarity"] } | null;
+      loot_definitions: { title: string; title_ro: string | null; description: string; description_ro: string | null; rarity: CollectionEntry["rarity"] } | null;
     }>;
 
     return Promise.all(
@@ -261,11 +267,14 @@ export const getCollection = createServerFn({ method: "GET" })
         return {
           claimId: row.id,
           title: row.loot_definitions?.title ?? "Unknown loot",
+          titleRo: row.loot_definitions?.title_ro ?? null,
           description: row.loot_definitions?.description ?? "",
+          descriptionRo: row.loot_definitions?.description_ro ?? null,
           rarity: row.loot_definitions?.rarity ?? "common",
           xp: row.awarded_xp,
           foundAt: row.created_at,
           reason: row.verification_reason,
+          reasonRo: row.verification_reason_ro,
           stickerStatus: row.sticker_status,
           stickerUrl: sticker.data?.signedUrl ?? null,
           photoUrl: photo.data?.signedUrl ?? null,
