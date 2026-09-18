@@ -70,6 +70,10 @@
   --rarity-rare: oklch(0.58 0.2 250);
   --rarity-epic: oklch(0.52 0.25 300);
   --rarity-legendary: oklch(0.75 0.16 85);
+  --flag-red: oklch(0.52 0.2 25);
+  --flag-blue: oklch(0.42 0.16 255);
+  --flag-yellow: oklch(0.82 0.17 90);
+  --flag-light: oklch(0.98 0.01 95);
 }
 
 .dark {
@@ -136,4 +140,40 @@
     transparent 1px
   );
   background-size: 8px 8px;
+}
+
+.flag-us,
+.flag-ro {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 14px;
+  border: 1px solid var(--outline);
+  overflow: hidden;
+}
+
+.flag-us {
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--flag-red) 0 2px,
+    var(--flag-light) 2px 4px
+  );
+}
+
+.flag-us::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 9px;
+  height: 8px;
+  background: var(--flag-blue);
+}
+
+.flag-ro {
+  background: linear-gradient(
+    to right,
+    var(--flag-blue) 0 33.333%,
+    var(--flag-yellow) 33.333% 66.666%,
+    var(--flag-red) 66.666%
+  );
 }

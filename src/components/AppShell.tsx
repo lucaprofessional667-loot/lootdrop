@@ -75,9 +75,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               onClick={toggleLanguage}
               aria-label={t("switchLanguage")}
               title={t("switchLanguage")}
-              className="grid h-9 w-9 animate-scale-in place-items-center border-2 border-outline bg-secondary text-lg pixel-shadow-sm pixel-press"
+              className="grid h-9 w-9 animate-scale-in place-items-center border-2 border-outline bg-secondary pixel-shadow-sm pixel-press"
             >
-              <span aria-hidden="true">{language === "en" ? "🇺🇸" : "🇷🇴"}</span>
+              <span aria-hidden="true" className={language === "en" ? "flag-us" : "flag-ro"} />
             </button>
             <ThemeToggle />
             <button
