@@ -113,15 +113,25 @@ export const ensureDailyQuest = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const questDate = questDateFor();
-    const { data: existing, error } = await supabase.from("loot_definitions").select("id, rarity, user_id").eq("quest_date", questDate);
+    const { data: existing, error } = await supabase.from("loot_definitions").select("id, rarity, user_id, title_ro").eq("quest_date", questDate);
     if (error) throw new Error(error.message);
 
     const hasShared = (existing ?? []).some((row) => row.user_id === null);
     const ownRarities = new Set((existing ?? []).filter((row) => row.user_id === userId).map((row) => row.rarity));
     const missingPersonal = PERSONAL_RARITIES.filter((rarity) => !ownRarities.has(rarity));
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const untranslated = (existing ?? []).filter((row) => !row.title_ro);
+    for (const row of untranslated) {
+      const { data: source } = await supabaseAdmin.from("loot_definitions").select("title, description, verification_prompt").eq("id", row.id).single();
+      if (!source) continue;
+      const translated = await generateLoot([row.rarity as Rarity], `Translate this exact existing objective into Romanian and preserve its meaning: ${JSON.stringify(source)}`);
+      const localized = translated[row.rarity];
+      if (localized) {
+        await supabaseAdmin.from("loot_definitions").update({ title_ro: localized.title_ro, description_ro: localized.description_ro, verification_prompt_ro: localized.verification_prompt_ro }).eq("id", row.id);
+      }
+    }
     if (hasShared && missingPersonal.length === 0) return { questDate, created: 0 };
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const rows = [];
 
     if (!hasShared) {

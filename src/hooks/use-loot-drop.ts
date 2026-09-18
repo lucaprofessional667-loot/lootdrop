@@ -4,8 +4,9 @@ import { hasSupabaseConfig } from "@/lib/supabase-config";
 import { verifyClaim } from "@/lib/loot.functions";
 import { ensureDailyQuest, questDateFor } from "@/lib/quest.functions";
 import { compressImage, getCurrentCoords } from "@/lib/image-compress";
+import { useLanguage } from "@/lib/i18n";
 
-export type Loot = { id: string; title: string; description: string; title_ro?: string; description_ro?: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"; shared: boolean };
+export type Loot = { id: string; title: string; description: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"; shared: boolean };
 export type Profile = { id: string; username: string; total_xp: number; level: number };
 export type Claim = { id: string; loot_id: string; status: "pending" | "approved" | "rejected"; verification_reason: string | null; awarded_xp: number; created_at: string };
 
@@ -13,6 +14,7 @@ const usernameToEmail = (username: string) =>
   `${username.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}@lootdrop.player`;
 
 export function useLootDrop() {
+  const { language } = useLanguage();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [loot, setLoot] = useState<Loot[]>([]);
@@ -40,11 +42,17 @@ export function useLootDrop() {
       ]);
       if (profileResult.error || lootResult.error || claimsResult.error) throw profileResult.error || lootResult.error || claimsResult.error;
       setProfile(profileResult.data ? { ...profileResult.data, level: profileResult.data.level ?? 1 } : null);
-      setLoot((lootResult.data ?? []).map(({ user_id, ...item }) => ({ ...item, shared: user_id === null })));
+      setLoot((lootResult.data ?? []).map(({ user_id, title_ro, description_ro, verification_prompt_ro, ...item }) => ({
+        ...item,
+        title: language === "ro" ? title_ro ?? item.title : item.title,
+        description: language === "ro" ? description_ro ?? item.description : item.description,
+        verification_prompt: language === "ro" ? verification_prompt_ro ?? item.verification_prompt : item.verification_prompt,
+        shared: user_id === null,
+      })));
       setClaims(claimsResult.data ?? []);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Nu am putut încărca datele de joc."); }
     finally { setLoading(false); }
-  }, []);
+  }, [language]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
