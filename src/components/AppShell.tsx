@@ -79,6 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <span aria-hidden="true">{language === "en" ? "🇺🇸" : "🇷🇴"}</span>
             </button>
+            <LanguageToggle />
             <ThemeToggle />
             <button
               aria-label={t("notifications")}

@@ -28,6 +28,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { configured, profile, loot, foundToday, xpToday, loading } = useLootDrop();
   const { entries } = useCollection();
+  const { t } = useLanguage();
   const recentFinds = entries.slice(0, 4);
   const xp = profile?.total_xp ?? 0;
   const levelFloor = Math.max(0, (profile?.level ?? 1) - 1) * 500;
@@ -132,13 +133,13 @@ function HomePage() {
                   className={`grid h-9 w-9 place-items-center overflow-hidden border-2 border-outline ${rarity.badge}`}
                 >
                   {image ? (
-                    <img src={image} alt={find.title} className="h-full w-full object-contain" />
+                    <img src={image} alt={t({ en: find.title, ro: find.title_ro })} className="h-full w-full object-contain" />
                   ) : (
                     <span className="font-pixel text-[6px]">?</span>
                   )}
                 </span>
                 <span className="w-full truncate text-center text-[10px] font-semibold text-card-foreground">
-                  {find.title}
+                  {t({ en: find.title, ro: find.title_ro })}
                 </span>
                 <span className="font-pixel text-[6px] text-muted-foreground">
                   +{find.xp}XP

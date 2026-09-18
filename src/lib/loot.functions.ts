@@ -212,9 +212,9 @@ export const retrySticker = createServerFn({ method: "POST" })
 
 export type CollectionEntry = {
   claimId: string;
-  title: string;
+  title: string; title_ro?: string | null;
   titleRo: string | null;
-  description: string;
+  description: string; description_ro?: string | null;
   descriptionRo: string | null;
   rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
   xp: number;
@@ -253,7 +253,7 @@ export const getCollection = createServerFn({ method: "GET" })
       created_at: string;
       latitude: number | null;
       longitude: number | null;
-      loot_definitions: { title: string; title_ro: string | null; description: string; description_ro: string | null; rarity: CollectionEntry["rarity"] } | null;
+      loot_definitions: { title: string; title_ro?: string | null; title_ro: string | null; description: string; description_ro?: string | null; description_ro: string | null; rarity: CollectionEntry["rarity"] } | null;
     }>;
 
     return Promise.all(
