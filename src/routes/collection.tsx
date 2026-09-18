@@ -13,6 +13,8 @@ export const Route = createFileRoute("/collection")({
       { name: "description", content: "Every loot you verified, turned into a paper sticker." },
       { property: "og:title", content: "Collection — Loot Drop" },
       { property: "og:description", content: "Every loot you verified, turned into a paper sticker." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CollectionPage,

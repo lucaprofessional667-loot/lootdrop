@@ -11,6 +11,8 @@ export const Route = createFileRoute("/profile")({
       { name: "description", content: "Your hunter profile: level, XP and account." },
       { property: "og:title", content: "Profile — Loot Drop" },
       { property: "og:description", content: "Your hunter profile: level, XP and account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProfilePage,

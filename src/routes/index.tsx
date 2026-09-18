@@ -20,6 +20,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Your daily loot: objectives, XP progress and your latest finds.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HomePage,

@@ -19,6 +19,8 @@ export const Route = createFileRoute("/quest")({
         property: "og:description",
         content: "Check today's loot objectives and hunt them before the reset.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: QuestPage,

@@ -18,7 +18,7 @@ export type Loot = {
   shared: boolean 
 };
 export type Profile = { id: string; username: string; total_xp: number; level: number };
-export type Claim = { id: string; loot_id: string; status: "pending" | "approved" | "rejected"; verification_reason: string | null; awarded_xp: number; created_at: string };
+export type Claim = { id: string; loot_id: string; status: "pending" | "approved" | "rejected"; verification_reason: string | null; verification_reason_ro: string | null; awarded_xp: number; created_at: string };
 
 const usernameToEmail = (username: string) =>
   `${username.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}@lootdrop.player`;
@@ -47,7 +47,7 @@ export function useLootDrop() {
       const [profileResult, lootResult, claimsResult] = await Promise.all([
         supabase.from("profiles").select("id, username, total_xp, level").eq("id", user.id).maybeSingle(),
         supabase.from("loot_definitions").select("id, title, description, title_ro, description_ro, verification_prompt, xp, difficulty, rarity, user_id").eq("active", true).eq("quest_date", questDate).order("xp"),
-        supabase.from("loot_claims").select("id, loot_id, status, verification_reason, awarded_xp, created_at").eq("user_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("loot_claims").select("id, loot_id, status, verification_reason, verification_reason_ro, awarded_xp, created_at").eq("user_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (profileResult.error || lootResult.error || claimsResult.error) throw profileResult.error || lootResult.error || claimsResult.error;
       setProfile(profileResult.data ? { ...profileResult.data, level: profileResult.data.level ?? 1 } : null);

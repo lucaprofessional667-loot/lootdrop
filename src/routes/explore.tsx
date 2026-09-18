@@ -9,6 +9,8 @@ export const Route = createFileRoute("/explore")({
       { name: "description", content: "Explore nearby loot drops." },
       { property: "og:title", content: "Explore — Loot Drop" },
       { property: "og:description", content: "Explore nearby loot drops." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ExplorePage,
