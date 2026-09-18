@@ -4,6 +4,7 @@ import { Backpack, RefreshCw, X } from "lucide-react";
 import { useCollection } from "@/hooks/use-collection";
 import { RARITY_STYLES } from "@/lib/loot-data";
 import type { CollectionEntry } from "@/lib/loot.functions";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/collection")({
   head: () => ({
@@ -21,30 +22,33 @@ function CollectionPage() {
   const { entries, loading, error, retry } = useCollection();
   const [open, setOpen] = useState<CollectionEntry | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const { t, language, locale } = useLanguage();
+  const localized = (entry: CollectionEntry) => ({ title: language === "ro" ? entry.titleRo ?? entry.title : entry.title, description: language === "ro" ? entry.descriptionRo ?? entry.description : entry.description, reason: language === "ro" ? entry.reasonRo ?? entry.reason : entry.reason });
 
   return (
     <div className="space-y-4">
-      <h1 className="font-pixel text-sm text-foreground">LOOT HISTORY</h1>
+      <h1 className="font-pixel text-sm text-foreground">{t("lootHistory")}</h1>
 
-      {loading && <p className="font-pixel text-[9px] text-muted-foreground">LOADING STICKERS…</p>}
+      {loading && <p className="font-pixel text-[9px] text-muted-foreground">{t("loadingStickers")}</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {!loading && entries.length === 0 && (
         <div className="flex flex-col items-center gap-4 border-2 border-dashed border-outline bg-card p-10 text-center pixel-shadow">
           <Backpack className="h-10 w-10 text-muted-foreground" />
-          <p className="font-pixel text-[9px] text-foreground">NO LOOT YET</p>
-          <p className="text-sm text-muted-foreground">Verify a photo and your first sticker lands here.</p>
+          <p className="font-pixel text-[9px] text-foreground">{t("noLootYet")}</p>
+          <p className="text-sm text-muted-foreground">{t("collectionEmpty")}</p>
           <Link
             to="/quest"
             className="border-2 border-outline bg-primary px-3 py-2 font-pixel text-[8px] text-primary-foreground pixel-shadow-sm pixel-press"
           >
-            TODAY'S QUEST
+            {t("todaysQuest")}
           </Link>
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
         {entries.map((entry) => {
+          const copy = localized(entry);
           const rarity = RARITY_STYLES[entry.rarity];
           const image = entry.stickerUrl ?? entry.photoUrl;
           return (
@@ -57,22 +61,22 @@ function CollectionPage() {
                 {image ? (
                   <img
                     src={image}
-                    alt={entry.title}
+                    alt={copy.title}
                     className="h-full w-full object-contain p-1 drop-shadow-[0_2px_0_rgba(0,0,0,0.35)]"
                   />
                 ) : (
-                  <span className="font-pixel text-[7px] text-muted-foreground">NO IMAGE</span>
+                  <span className="font-pixel text-[7px] text-muted-foreground">{t("noImage")}</span>
                 )}
               </div>
-              <p className="mt-2 truncate text-xs font-bold text-card-foreground">{entry.title}</p>
+              <p className="mt-2 truncate text-xs font-bold text-card-foreground">{copy.title}</p>
               <div className="mt-1 flex items-center justify-between gap-1">
                 <span className={`border-2 border-outline px-1 py-0.5 font-pixel text-[6px] ${rarity.badge}`}>
-                  {rarity.label}
+                  {t(entry.rarity)}
                 </span>
                 <span className="font-pixel text-[7px] text-primary">+{entry.xp}XP</span>
               </div>
               <p className="mt-1 font-pixel text-[6px] text-muted-foreground">
-                {new Date(entry.foundAt).toLocaleDateString()}
+                {new Date(entry.foundAt).toLocaleDateString(locale)}
               </p>
             </button>
           );
@@ -89,16 +93,16 @@ function CollectionPage() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-2">
-              <h2 className="font-pixel text-[10px] text-foreground">{open.title.toUpperCase()}</h2>
-              <button onClick={() => setOpen(null)} aria-label="Close" className="pixel-press">
+               <h2 className="font-pixel text-[10px] text-foreground">{localized(open).title.toUpperCase()}</h2>
+               <button onClick={() => setOpen(null)} aria-label={t("close")} className="pixel-press">
                 <X className="h-4 w-4" />
               </button>
             </div>
             {open.photoUrl && (
-              <img src={open.photoUrl} alt={`Proof photo for ${open.title}`} className="w-full border-2 border-outline" />
+               <img src={open.photoUrl} alt={`${t("proofFor")} ${localized(open).title}`} className="w-full border-2 border-outline" />
             )}
-            <p className="text-sm text-muted-foreground">{open.description}</p>
-            {open.reason && <p className="text-xs text-muted-foreground">AI: {open.reason}</p>}
+             <p className="text-sm text-muted-foreground">{localized(open).description}</p>
+             {localized(open).reason && <p className="text-xs text-muted-foreground">AI: {localized(open).reason}</p>}
             {open.stickerStatus !== "ready" && (
               <button
                 disabled={busy === open.claimId}
@@ -114,7 +118,7 @@ function CollectionPage() {
                 className="inline-flex w-full items-center justify-center gap-2 border-2 border-outline bg-secondary py-2 font-pixel text-[8px] text-secondary-foreground pixel-shadow-sm pixel-press disabled:opacity-60"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
-                {busy === open.claimId ? "MAKING STICKER…" : "MAKE STICKER"}
+                 {busy === open.claimId ? t("makingSticker") : t("makeSticker")}
               </button>
             )}
           </div>
