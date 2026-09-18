@@ -13,9 +13,15 @@ const RARITY_SPEC: Record<Rarity, { xp: number; difficulty: number }> = {
 
 const PERSONAL_RARITIES: Rarity[] = ["uncommon", "rare", "epic", "legendary"];
 
-type GeneratedLoot = { title: string; description: string; verification_prompt: string };
+type GeneratedLoot = { 
+  title: string; 
+  description: string; 
+  verification_prompt: string;
+  title_ro: string;
+  description_ro: string;
+  verification_prompt_ro: string;
+};
 
-/** Current quest day in the game's timezone (resets at local midnight). */
 export function questDateFor(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Bucharest",
@@ -38,11 +44,11 @@ async function generateLoot(rarities: Rarity[], seed: string): Promise<Record<st
         {
           role: "system",
           content:
-            "You design daily real-world scavenger-hunt objectives for a retro arcade game. Each objective must be a concrete thing a player can photograph in almost any town or city, verifiable from a single photo. No tasks needing money, trespassing, other people's faces, or travel. Higher rarity means harder and rarer to spot. Keep titles under 28 characters, descriptions under 90 characters, and write a verification_prompt describing exactly what the photo must show.",
+            "You design daily real-world scavenger-hunt objectives for a retro arcade game. Each objective must be a concrete thing a player can photograph in almost any town or city. Provide every field in both English and Romanian. Keep titles under 28 chars and descriptions under 90 chars.",
         },
         {
           role: "user",
-          content: `Seed: ${seed}. Invent one fresh objective for each of these rarities: ${rarities.join(", ")}. Make them varied and different from typical picks like bottle caps or murals.`,
+          content: `Seed: ${seed}. Invent one fresh objective for each of these rarities: ${rarities.join(", ")}.`,
         },
       ],
       response_format: {
@@ -63,8 +69,11 @@ async function generateLoot(rarities: Rarity[], seed: string): Promise<Record<st
                     title: { type: "string" },
                     description: { type: "string" },
                     verification_prompt: { type: "string" },
+                    title_ro: { type: "string" },
+                    description_ro: { type: "string" },
+                    verification_prompt_ro: { type: "string" },
                   },
-                  required: ["title", "description", "verification_prompt"],
+                  required: ["title", "description", "verification_prompt", "title_ro", "description_ro", "verification_prompt_ro"],
                 },
               ]),
             ),
@@ -75,14 +84,11 @@ async function generateLoot(rarities: Rarity[], seed: string): Promise<Record<st
     }),
   });
 
-  if (response.status === 429) throw new Error("Too many quest generations right now. Try again shortly.");
-  if (response.status === 402) throw new Error("AI credits are exhausted, so today's quest could not be generated.");
   if (!response.ok) throw new Error(`Quest generation failed (${response.status}).`);
-
-  const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const payload = await response.json();
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("Quest generation returned no answer.");
-  return JSON.parse(content) as Record<string, GeneratedLoot>;
+  return JSON.parse(content);
 }
 
 function toRow(rarity: Rarity, loot: GeneratedLoot, questDate: string, userId: string | null) {
@@ -90,6 +96,9 @@ function toRow(rarity: Rarity, loot: GeneratedLoot, questDate: string, userId: s
     title: loot.title.slice(0, 60),
     description: loot.description.slice(0, 160),
     verification_prompt: loot.verification_prompt.slice(0, 400),
+    title_ro: loot.title_ro.slice(0, 60),
+    description_ro: loot.description_ro.slice(0, 160),
+    verification_prompt_ro: loot.verification_prompt_ro.slice(0, 400),
     rarity,
     xp: RARITY_SPEC[rarity].xp,
     difficulty: RARITY_SPEC[rarity].difficulty,
@@ -99,20 +108,12 @@ function toRow(rarity: Rarity, loot: GeneratedLoot, questDate: string, userId: s
   };
 }
 
-/**
- * Makes sure today's quest exists: one shared lowest-rarity loot for everyone,
- * plus four personal loots for the signed-in player.
- */
 export const ensureDailyQuest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const questDate = questDateFor();
-
-    const { data: existing, error } = await supabase
-      .from("loot_definitions")
-      .select("id, rarity, user_id")
-      .eq("quest_date", questDate);
+    const { data: existing, error } = await supabase.from("loot_definitions").select("id, rarity, user_id").eq("quest_date", questDate);
     if (error) throw new Error(error.message);
 
     const hasShared = (existing ?? []).some((row) => row.user_id === null);
@@ -121,27 +122,21 @@ export const ensureDailyQuest = createServerFn({ method: "POST" })
     if (hasShared && missingPersonal.length === 0) return { questDate, created: 0 };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const rows: ReturnType<typeof toRow>[] = [];
+    const rows = [];
 
     if (!hasShared) {
       const generated = await generateLoot(["common"], `shared-${questDate}`);
-      const shared = generated["common"];
-      if (shared) rows.push(toRow("common", shared, questDate, null));
+      if (generated["common"]) rows.push(toRow("common", generated["common"], questDate, null));
     }
-
     if (missingPersonal.length > 0) {
       const generated = await generateLoot(missingPersonal, `${userId}-${questDate}`);
       for (const rarity of missingPersonal) {
-        const loot = generated[rarity];
-        if (loot) rows.push(toRow(rarity, loot, questDate, userId));
+        if (generated[rarity]) rows.push(toRow(rarity, generated[rarity], questDate, userId));
       }
     }
-
-    // Inserted one by one: the unique indexes reject duplicates from concurrent runs.
     for (const row of rows) {
       const { error: insertError } = await supabaseAdmin.from("loot_definitions").insert(row);
       if (insertError && insertError.code !== "23505") throw new Error(insertError.message);
     }
-
     return { questDate, created: rows.length };
   });

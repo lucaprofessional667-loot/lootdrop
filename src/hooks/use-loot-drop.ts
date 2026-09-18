@@ -5,7 +5,7 @@ import { verifyClaim } from "@/lib/loot.functions";
 import { ensureDailyQuest, questDateFor } from "@/lib/quest.functions";
 import { compressImage, getCurrentCoords } from "@/lib/image-compress";
 
-export type Loot = { id: string; title: string; description: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"; shared: boolean };
+export type Loot = { id: string; title: string; description: string; title_ro?: string; description_ro?: string; verification_prompt: string; xp: number; difficulty: number; rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"; shared: boolean };
 export type Profile = { id: string; username: string; total_xp: number; level: number };
 export type Claim = { id: string; loot_id: string; status: "pending" | "approved" | "rejected"; verification_reason: string | null; awarded_xp: number; created_at: string };
 
@@ -35,7 +35,7 @@ export function useLootDrop() {
       }
       const [profileResult, lootResult, claimsResult] = await Promise.all([
         supabase.from("profiles").select("id, username, total_xp, level").eq("id", user.id).maybeSingle(),
-        supabase.from("loot_definitions").select("id, title, description, verification_prompt, xp, difficulty, rarity, user_id").eq("active", true).eq("quest_date", questDate).order("xp"),
+        supabase.from("loot_definitions").select("id, title, description, verification_prompt, title_ro, description_ro, verification_prompt_ro, xp, difficulty, rarity, user_id").eq("active", true).eq("quest_date", questDate).order("xp"),
         supabase.from("loot_claims").select("id, loot_id, status, verification_reason, awarded_xp, created_at").eq("user_id", user.id).order("created_at", { ascending: false }),
       ]);
       if (profileResult.error || lootResult.error || claimsResult.error) throw profileResult.error || lootResult.error || claimsResult.error;

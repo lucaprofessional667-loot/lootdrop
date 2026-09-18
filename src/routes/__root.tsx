@@ -12,22 +12,24 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppShell } from "../components/AppShell";
+import { LanguageProvider, useLanguage } from "../lib/i18n";
 
 function NotFoundComponent() {
+  const { t } = useLanguage();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="font-pixel text-4xl text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("pageNotFound")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          {t("missingPage")}
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center border-2 border-outline bg-primary px-4 py-2 font-pixel text-[10px] text-primary-foreground pixel-shadow"
           >
-            GO HOME
+            {t("goHome")}
           </Link>
         </div>
       </div>
@@ -38,6 +40,7 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
+  const { t } = useLanguage();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
@@ -46,10 +49,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          {t("pageFailed")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          {t("retryHint")}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -59,13 +62,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center border-2 border-outline bg-primary px-4 py-2 text-sm font-medium text-primary-foreground pixel-shadow-sm"
           >
-            Try again
+            {t("tryAgain")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center border-2 border-outline bg-background px-4 py-2 text-sm font-medium text-foreground pixel-shadow-sm"
           >
-            Go home
+            {t("goHome")}
           </a>
         </div>
       </div>
@@ -130,9 +133,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell>
-        <Outlet />
-      </AppShell>
+      <LanguageProvider>
+        <AppShell>
+          <Outlet />
+        </AppShell>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

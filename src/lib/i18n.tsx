@@ -1,0 +1,76 @@
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+export type Language = "en" | "ro";
+
+const messages = {
+  en: {
+    explore: "Explore", loot: "Loot", home: "Home", map: "Map", profile: "Profile",
+    switchLanguage: "Switch to Romanian", switchLight: "Switch to light mode", switchDark: "Switch to dark mode",
+    notifications: "Notifications", loading: "LOADING…", createHunter: "CREATE YOUR HUNTER", welcomeBack: "WELCOME BACK",
+    authHint: "Pick a username once — you stay signed in on this device.", username: "Username", password: "Password",
+    startHunting: "START HUNTING", signIn: "SIGN IN", haveAccount: "I ALREADY HAVE AN ACCOUNT", createAccount: "CREATE A NEW ACCOUNT",
+    signInFailed: "Could not sign in.", level: "LEVEL", foundToday: "FOUND TODAY", xpToday: "XP TODAY",
+    todaysQuest: "TODAY'S QUEST", tapToView: "TAP TO VIEW LOOT", recentFinds: "RECENT FINDS", viewAll: "VIEW ALL",
+    noLootYet: "NO LOOT YET", proofHint: "Found one? Snap a photo as proof to claim the XP.", resetsIn: "RESETS IN",
+    loadingQuest: "LOADING QUEST…", backHome: "Back to Home", newLootIn: "NEW LOOT IN", everyone: "EVERYONE",
+    verified: "VERIFIED", verifying: "VERIFYING", submitted: "Photo submitted for verification.", submitFailed: "Could not submit photo.",
+    uploading: "UPLOADING…", takePhoto: "TAKE PROOF PHOTO", noMatch: "Photo does not match this loot.",
+    lootHistory: "LOOT HISTORY", loadingStickers: "LOADING STICKERS…", collectionEmpty: "Verify a photo and your first sticker lands here.",
+    noImage: "NO IMAGE", close: "CLOSE", proofFor: "Proof photo for", makingSticker: "MAKING STICKER…", makeSticker: "MAKE STICKER",
+    lootMap: "LOOT MAP", loadingPins: "LOADING PINS…", noPins: "NO PINS YET", mapEmpty: "Allow location when you snap a proof photo and the spot lands on this map.",
+    totalXp: "TOTAL XP", lootFound: "LOOT FOUND", xpToNext: "XP TO NEXT LEVEL", signOut: "SIGN OUT", hunter: "HUNTER", pixelAvatar: "Pixel avatar",
+    exploreSoon: "The loot radar boots up here soon.", common: "COMMON", uncommon: "UNCOMMON", rare: "RARE", epic: "EPIC", legendary: "LEGENDARY",
+    difficulty: "Difficulty {count} out of 5", pageNotFound: "Page not found", missingPage: "The page you're looking for doesn't exist or has been moved.",
+    goHome: "GO HOME", pageFailed: "This page didn't load", retryHint: "Something went wrong on our end. You can try refreshing or head back home.", tryAgain: "Try again",
+  },
+  ro: {
+    explore: "Explorează", loot: "Colecție", home: "Acasă", map: "Hartă", profile: "Profil",
+    switchLanguage: "Schimbă în engleză", switchLight: "Treci la modul luminos", switchDark: "Treci la modul întunecat",
+    notifications: "Notificări", loading: "SE ÎNCARCĂ…", createHunter: "CREEAZĂ-ȚI VÂNĂTORUL", welcomeBack: "BINE AI REVENIT",
+    authHint: "Alege numele o singură dată — rămâi conectat pe acest dispozitiv.", username: "Nume de utilizator", password: "Parolă",
+    startHunting: "ÎNCEPE VÂNĂTOAREA", signIn: "INTRĂ ÎN CONT", haveAccount: "AM DEJA UN CONT", createAccount: "CREEAZĂ UN CONT NOU",
+    signInFailed: "Nu am putut intra în cont.", level: "NIVEL", foundToday: "GĂSITE AZI", xpToday: "XP AZI",
+    todaysQuest: "QUESTUL ZILEI", tapToView: "APASĂ PENTRU LOOT", recentFinds: "DESCOPERIRI RECENTE", viewAll: "VEZI TOT",
+    noLootYet: "ÎNCĂ NU AI LOOT", proofHint: "Ai găsit unul? Fă o poză ca dovadă pentru a primi XP.", resetsIn: "RESETARE ÎN",
+    loadingQuest: "SE ÎNCARCĂ QUESTUL…", backHome: "Înapoi acasă", newLootIn: "LOOT NOU ÎN", everyone: "PENTRU TOȚI",
+    verified: "VALIDAT", verifying: "SE VERIFICĂ", submitted: "Poza a fost trimisă pentru verificare.", submitFailed: "Nu am putut trimite poza.",
+    uploading: "SE ÎNCARCĂ…", takePhoto: "FĂ POZA DOVADĂ", noMatch: "Poza nu corespunde acestui loot.",
+    lootHistory: "ISTORIC LOOT", loadingStickers: "SE ÎNCARCĂ STICKERELE…", collectionEmpty: "Validează o poză și primul sticker va apărea aici.",
+    noImage: "FĂRĂ IMAGINE", close: "ÎNCHIDE", proofFor: "Poză dovadă pentru", makingSticker: "SE CREEAZĂ…", makeSticker: "CREEAZĂ STICKER",
+    lootMap: "HARTA LOOT-ULUI", loadingPins: "SE ÎNCARCĂ PINURILE…", noPins: "ÎNCĂ NU AI PINURI", mapEmpty: "Permite locația când faci poza-dovadă, iar locul va apărea pe hartă.",
+    totalXp: "XP TOTAL", lootFound: "LOOT GĂSIT", xpToNext: "XP PÂNĂ LA NIVELUL URMĂTOR", signOut: "IEȘI DIN CONT", hunter: "VÂNĂTOR", pixelAvatar: "Avatar pixelat",
+    exploreSoon: "Radarul de loot pornește aici în curând.", common: "COMUN", uncommon: "NEOBIȘNUIT", rare: "RAR", epic: "EPIC", legendary: "LEGENDAR",
+    difficulty: "Dificultate {count} din 5", pageNotFound: "Pagina nu a fost găsită", missingPage: "Pagina căutată nu există sau a fost mutată.",
+    goHome: "ACASĂ", pageFailed: "Pagina nu s-a încărcat", retryHint: "Ceva nu a funcționat. Reîncearcă sau întoarce-te acasă.", tryAgain: "Reîncearcă",
+  },
+} as const;
+
+export type TranslationKey = keyof typeof messages.en;
+type LanguageContextValue = { language: Language; locale: string; toggleLanguage: () => void; t: (key: TranslationKey, values?: Record<string, string | number>) => string };
+const LanguageContext = createContext<LanguageContextValue | null>(null);
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguage] = useState<Language>("en");
+  useEffect(() => {
+    const stored = window.localStorage.getItem("lootdrop-language");
+    if (stored === "ro") setLanguage("ro");
+  }, []);
+  useEffect(() => { document.documentElement.lang = language; }, [language]);
+  const value = useMemo<LanguageContextValue>(() => ({
+    language,
+    locale: language === "ro" ? "ro-RO" : "en-US",
+    toggleLanguage: () => setLanguage((current) => {
+      const next = current === "en" ? "ro" : "en";
+      window.localStorage.setItem("lootdrop-language", next);
+      return next;
+    }),
+    t: (key, values) => Object.entries(values ?? {}).reduce((text, [name, replacement]) => text.replace(`{${name}}`, String(replacement)), messages[language][key] as string),
+  }), [language]);
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) throw new Error("LanguageProvider is missing.");
+  return context;
+}
