@@ -28,6 +28,7 @@ export type Database = {
           sticker_status: Database["public"]["Enums"]["sticker_status"]
           user_id: string
           verification_reason: string | null
+          verification_reason_ro: string | null
           verified_at: string | null
         }
         Insert: {
@@ -43,6 +44,7 @@ export type Database = {
           sticker_status?: Database["public"]["Enums"]["sticker_status"]
           user_id: string
           verification_reason?: string | null
+          verification_reason_ro?: string | null
           verified_at?: string | null
         }
         Update: {
@@ -58,6 +60,7 @@ export type Database = {
           sticker_status?: Database["public"]["Enums"]["sticker_status"]
           user_id?: string
           verification_reason?: string | null
+          verification_reason_ro?: string | null
           verified_at?: string | null
         }
         Relationships: [
@@ -75,39 +78,48 @@ export type Database = {
           active: boolean
           created_at: string
           description: string
+          description_ro: string | null
           difficulty: number
           id: string
           quest_date: string | null
           rarity: Database["public"]["Enums"]["loot_rarity"]
           title: string
+          title_ro: string | null
           user_id: string | null
           verification_prompt: string
+          verification_prompt_ro: string | null
           xp: number
         }
         Insert: {
           active?: boolean
           created_at?: string
           description: string
+          description_ro?: string | null
           difficulty: number
           id?: string
           quest_date?: string | null
           rarity: Database["public"]["Enums"]["loot_rarity"]
           title: string
+          title_ro?: string | null
           user_id?: string | null
           verification_prompt: string
+          verification_prompt_ro?: string | null
           xp: number
         }
         Update: {
           active?: boolean
           created_at?: string
           description?: string
+          description_ro?: string | null
           difficulty?: number
           id?: string
           quest_date?: string | null
           rarity?: Database["public"]["Enums"]["loot_rarity"]
           title?: string
+          title_ro?: string | null
           user_id?: string | null
           verification_prompt?: string
+          verification_prompt_ro?: string | null
           xp?: number
         }
         Relationships: []
@@ -163,6 +175,7 @@ export type Database = {
           sticker_status: Database["public"]["Enums"]["sticker_status"]
           user_id: string
           verification_reason: string | null
+          verification_reason_ro: string | null
           verified_at: string | null
         }
         SetofOptions: {
