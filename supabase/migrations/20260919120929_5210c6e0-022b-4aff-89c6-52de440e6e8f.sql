@@ -1,0 +1,6 @@
+CREATE POLICY "users insert own proofs" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'loot-proofs' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "users update own proofs" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'loot-proofs' AND (storage.foldername(name))[1] = auth.uid()::text) WITH CHECK (bucket_id = 'loot-proofs' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "users delete own proofs" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'loot-proofs' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "users insert own stickers" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'loot-stickers' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "users update own stickers" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'loot-stickers' AND (storage.foldername(name))[1] = auth.uid()::text) WITH CHECK (bucket_id = 'loot-stickers' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "users delete own stickers" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'loot-stickers' AND (storage.foldername(name))[1] = auth.uid()::text);

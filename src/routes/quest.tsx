@@ -28,7 +28,7 @@ export const Route = createFileRoute("/quest")({
 
 function QuestPage() {
   const { loot, claims, loading, error, submitProof } = useLootDrop();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   if (loading) return <p className="font-pixel text-[9px] text-muted-foreground">{t("loadingQuest")}</p>;
   if (error) return <p className="text-sm text-destructive">{error}</p>;
@@ -69,7 +69,7 @@ function QuestPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="truncate text-sm font-bold text-card-foreground">
-                      {lootItem.title}
+                      {language === "ro" ? lootItem.title_ro ?? lootItem.title : lootItem.title}
                       {lootItem.shared ? (
                         <span className="ml-2 border-2 border-outline bg-secondary px-1 py-0.5 align-middle font-pixel text-[7px] text-secondary-foreground">
                            {t("everyone")}
@@ -81,7 +81,7 @@ function QuestPage() {
                     </span>
                   </div>
                   <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                    {lootItem.description}
+                    {language === "ro" ? lootItem.description_ro ?? lootItem.description : lootItem.description}
                   </p>
                   <div className="mt-2 flex items-center justify-between gap-2">
                     <Stars count={lootItem.difficulty} />
