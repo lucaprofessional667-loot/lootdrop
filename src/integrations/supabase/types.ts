@@ -14,182 +14,16 @@ export type Database = {
   }
   public: {
     Tables: {
-      loot_claims: {
-        Row: {
-          awarded_xp: number
-          created_at: string
-          id: string
-          latitude: number | null
-          longitude: number | null
-          loot_id: string
-          photo_path: string
-          status: Database["public"]["Enums"]["claim_status"]
-          sticker_path: string | null
-          sticker_status: Database["public"]["Enums"]["sticker_status"]
-          user_id: string
-          verification_reason: string | null
-          verification_reason_ro: string | null
-          verified_at: string | null
-        }
-        Insert: {
-          awarded_xp?: number
-          created_at?: string
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          loot_id: string
-          photo_path: string
-          status?: Database["public"]["Enums"]["claim_status"]
-          sticker_path?: string | null
-          sticker_status?: Database["public"]["Enums"]["sticker_status"]
-          user_id: string
-          verification_reason?: string | null
-          verification_reason_ro?: string | null
-          verified_at?: string | null
-        }
-        Update: {
-          awarded_xp?: number
-          created_at?: string
-          id?: string
-          latitude?: number | null
-          longitude?: number | null
-          loot_id?: string
-          photo_path?: string
-          status?: Database["public"]["Enums"]["claim_status"]
-          sticker_path?: string | null
-          sticker_status?: Database["public"]["Enums"]["sticker_status"]
-          user_id?: string
-          verification_reason?: string | null
-          verification_reason_ro?: string | null
-          verified_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "loot_claims_loot_id_fkey"
-            columns: ["loot_id"]
-            isOneToOne: false
-            referencedRelation: "loot_definitions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      loot_definitions: {
-        Row: {
-          active: boolean
-          created_at: string
-          description: string
-          description_ro: string | null
-          difficulty: number
-          id: string
-          quest_date: string | null
-          rarity: Database["public"]["Enums"]["loot_rarity"]
-          title: string
-          title_ro: string | null
-          user_id: string | null
-          verification_prompt: string
-          verification_prompt_ro: string | null
-          xp: number
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          description: string
-          description_ro?: string | null
-          difficulty: number
-          id?: string
-          quest_date?: string | null
-          rarity: Database["public"]["Enums"]["loot_rarity"]
-          title: string
-          title_ro?: string | null
-          user_id?: string | null
-          verification_prompt: string
-          verification_prompt_ro?: string | null
-          xp: number
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          description?: string
-          description_ro?: string | null
-          difficulty?: number
-          id?: string
-          quest_date?: string | null
-          rarity?: Database["public"]["Enums"]["loot_rarity"]
-          title?: string
-          title_ro?: string | null
-          user_id?: string | null
-          verification_prompt?: string
-          verification_prompt_ro?: string | null
-          xp?: number
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          id: string
-          level: number | null
-          total_xp: number
-          updated_at: string
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          level?: number | null
-          total_xp?: number
-          updated_at?: string
-          username: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          level?: number | null
-          total_xp?: number
-          updated_at?: string
-          username?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      finalize_loot_claim: {
-        Args: {
-          claim_id: string
-          reason: string
-          verdict: Database["public"]["Enums"]["claim_status"]
-        }
-        Returns: {
-          awarded_xp: number
-          created_at: string
-          id: string
-          latitude: number | null
-          longitude: number | null
-          loot_id: string
-          photo_path: string
-          status: Database["public"]["Enums"]["claim_status"]
-          sticker_path: string | null
-          sticker_status: Database["public"]["Enums"]["sticker_status"]
-          user_id: string
-          verification_reason: string | null
-          verification_reason_ro: string | null
-          verified_at: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "loot_claims"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+      [_ in never]: never
     }
     Enums: {
-      claim_status: "pending" | "approved" | "rejected"
-      loot_rarity: "common" | "uncommon" | "rare" | "epic" | "legendary"
-      sticker_status: "pending" | "ready" | "failed"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -316,10 +150,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      claim_status: ["pending", "approved", "rejected"],
-      loot_rarity: ["common", "uncommon", "rare", "epic", "legendary"],
-      sticker_status: ["pending", "ready", "failed"],
-    },
+    Enums: {},
   },
 } as const

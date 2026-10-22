@@ -4,7 +4,7 @@ import { QuestCountdown } from "@/components/QuestCountdown";
 import { RARITY_STYLES, Stars } from "@/lib/loot-data";
 import { LootClaimButton } from "@/components/LootClaimButton";
 import { useLootDrop } from "@/hooks/use-loot-drop";
-import { useLanguage } from "@/lib/i18n";
+import { useState } from "react";
 
 export const Route = createFileRoute("/quest")({
   head: () => ({
@@ -19,19 +19,19 @@ export const Route = createFileRoute("/quest")({
         property: "og:description",
         content: "Check today's loot objectives and hunt them before the reset.",
       },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: QuestPage,
 });
 
 function QuestPage() {
-  const { loot, claims, loading, error, submitProof } = useLootDrop();
-  const { t, language } = useLanguage();
+  const { configured, profile, loot, claims, loading, error, chooseUsername, submitProof } = useLootDrop();
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState<string | null>(null);
 
-  if (loading) return <p className="font-pixel text-[9px] text-muted-foreground">{t("loadingQuest")}</p>;
-  if (error) return <p className="text-sm text-destructive">{error}</p>;
+  if (!configured) return <SetupNotice />;
+  if (loading) return <p className="font-pixel text-[9px] text-muted-foreground">LOADING QUEST…</p>;
+  if (!profile) return <div className="space-y-4 border-2 border-outline bg-card p-4 pixel-shadow"><h1 className="font-pixel text-sm">CHOOSE YOUR USERNAME</h1><p className="text-sm text-muted-foreground">We create a private anonymous game session. Your username is only your in-game display name for now.</p><input value={username} onChange={(event) => setUsername(event.target.value)} maxLength={24} placeholder="e.g. LootHunter" className="w-full border-2 border-outline bg-background px-3 py-2 text-sm" /><button onClick={async () => { try { setUsernameError(null); await chooseUsername(username); } catch (cause) { setUsernameError(cause instanceof Error ? cause.message : "Could not save username."); } }} className="w-full border-2 border-outline bg-primary py-2 font-pixel text-[9px] text-primary-foreground pixel-shadow-sm">START HUNTING</button>{usernameError && <p className="text-sm text-destructive">{usernameError}</p>}{error && <p className="text-sm text-destructive">{error}</p>}</div>;
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -39,16 +39,16 @@ function QuestPage() {
         <Link
           to="/"
           className="grid h-9 w-9 place-items-center border-2 border-outline bg-secondary text-secondary-foreground pixel-shadow-sm pixel-press"
-          aria-label={t("backHome")}
+          aria-label="Back to Home"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
-        <h1 className="font-pixel text-sm text-foreground">{t("todaysQuest")}</h1>
+        <h1 className="font-pixel text-sm text-foreground">TODAY'S QUEST</h1>
       </div>
 
       {/* Countdown banner */}
       <div className="border-2 border-outline bg-card p-4 text-center pixel-shadow">
-        <p className="font-pixel text-[10px] text-muted-foreground">{t("newLootIn")}</p>
+        <p className="font-pixel text-[10px] text-muted-foreground">NEW LOOT IN</p>
         <QuestCountdown
           className="mt-2 block font-pixel text-2xl text-primary"
           prefix=""
@@ -69,26 +69,21 @@ function QuestPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="truncate text-sm font-bold text-card-foreground">
-                      {language === "ro" ? lootItem.title_ro ?? lootItem.title : lootItem.title}
-                      {lootItem.shared ? (
-                        <span className="ml-2 border-2 border-outline bg-secondary px-1 py-0.5 align-middle font-pixel text-[7px] text-secondary-foreground">
-                           {t("everyone")}
-                        </span>
-                      ) : null}
+                      {lootItem.title}
                     </h3>
                     <span className="shrink-0 font-pixel text-[9px] text-primary">
                       +{lootItem.xp}XP
                     </span>
                   </div>
                   <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                    {language === "ro" ? lootItem.description_ro ?? lootItem.description : lootItem.description}
+                    {lootItem.description}
                   </p>
                   <div className="mt-2 flex items-center justify-between gap-2">
                     <Stars count={lootItem.difficulty} />
                     <span
                       className={`border-2 border-outline px-1.5 py-0.5 font-pixel text-[7px] ${rarity.badge}`}
                     >
-                      {t(lootItem.rarity)}
+                      {rarity.label}
                     </span>
                   </div>
                 </div>
@@ -100,4 +95,8 @@ function QuestPage() {
       </section>
     </div>
   );
+}
+
+function SetupNotice() {
+  return <div className="border-2 border-outline bg-card p-4 pixel-shadow"><h1 className="font-pixel text-sm">CONNECT SUPABASE</h1><p className="mt-3 text-sm text-muted-foreground">Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to your local environment or connect the project in Lovable Cloud, then reload.</p></div>;
 }

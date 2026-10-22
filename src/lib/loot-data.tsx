@@ -1,5 +1,4 @@
 import { Star, Coins, Zap, Target, Flame, Palette, Building2, Droplet, Crown, TreePine } from "lucide-react";
-import { useLanguage } from "@/lib/i18n";
 
 export type Rarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
 
@@ -92,9 +91,8 @@ export const RECENT_FINDS: Array<{ title: string; rarity: Rarity; xp: number; ic
 ];
 
 export function Stars({ count }: { count: number }) {
-  const { t } = useLanguage();
   return (
-    <div className="flex items-center gap-0.5" aria-label={t("difficulty", { count })}>
+    <div className="flex items-center gap-0.5" aria-label={`Difficulty ${count} out of 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as MapRouteImport } from './routes/map'
@@ -19,6 +20,11 @@ import { Route as QuestRouteImport } from './routes/quest'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -49,6 +55,7 @@ const QuestRoute = QuestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/collection': typeof CollectionRoute
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/collection': typeof CollectionRoute
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/collection': typeof CollectionRoute
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
@@ -74,12 +83,15 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/collection' | '/explore' | '/map' | '/profile' | '/quest'
+  fullPaths:
+    '/' | '/auth' | '/collection' | '/explore' | '/map' | '/profile' | '/quest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/collection' | '/explore' | '/map' | '/profile' | '/quest'
+  to:
+    '/' | '/auth' | '/collection' | '/explore' | '/map' | '/profile' | '/quest'
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/collection'
     | '/explore'
     | '/map'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   CollectionRoute: typeof CollectionRoute
   ExploreRoute: typeof ExploreRoute
   MapRoute: typeof MapRoute
@@ -103,6 +116,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -145,6 +165,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   CollectionRoute: CollectionRoute,
   ExploreRoute: ExploreRoute,
   MapRoute: MapRoute,
